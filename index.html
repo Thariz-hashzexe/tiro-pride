@@ -1,0 +1,486 @@
+
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+.mk-root{
+  min-height:100vh;
+  background:#02030a;
+  font-family:'Inter',system-ui,sans-serif;
+  overflow:hidden;
+  position:relative;
+  color:#fff;
+}
+
+.mk-canvas{
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:52px 22px 60px;
+  min-height:100vh;
+  max-width:440px;
+  margin:0 auto;
+}
+
+/* ── Sky layers ── */
+.sky{position:absolute;inset:0;z-index:0;overflow:hidden}
+.sky-base{position:absolute;inset:0;background:radial-gradient(ellipse 90% 60% at 50% -10%,#0d1533 0%,#040610 55%,#01020a 100%)}
+.sky-mid{position:absolute;inset:0;background:radial-gradient(ellipse 70% 40% at 70% 20%,rgba(180,195,255,0.06) 0%,transparent 65%)}
+.sky-low{position:absolute;bottom:0;left:0;right:0;height:45%;background:linear-gradient(to top,rgba(1,2,8,0.95) 0%,transparent 100%)}
+
+/* ── Moon ── */
+.moon{
+  position:absolute;
+  top:48px;right:52px;
+  width:64px;height:64px;
+  border-radius:50%;
+  background:radial-gradient(circle at 38% 38%,#e8eeff 0%,#c5ceff 40%,#8899cc 100%);
+  box-shadow:0 0 40px rgba(180,195,255,0.5),0 0 90px rgba(140,160,240,0.2),0 0 160px rgba(100,130,220,0.08);
+  animation:moonpulse 6s ease-in-out infinite;
+  z-index:1;
+}
+.moon-crescent{
+  position:absolute;
+  top:8px;left:10px;
+  width:46px;height:46px;
+  border-radius:50%;
+  background:radial-gradient(circle at 60% 40%,transparent 55%,rgba(10,15,40,0.25) 100%);
+}
+@keyframes moonpulse{
+  0%,100%{box-shadow:0 0 40px rgba(180,195,255,0.5),0 0 90px rgba(140,160,240,0.2)}
+  50%{box-shadow:0 0 60px rgba(200,215,255,0.7),0 0 130px rgba(160,180,255,0.3),0 0 200px rgba(120,150,230,0.12)}
+}
+
+/* ── Stars ── */
+.stars-layer{position:absolute;inset:0;z-index:1}
+
+/* ── Mist ── */
+.mist{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:260px;
+  z-index:1;
+  pointer-events:none;
+  background:linear-gradient(to top,rgba(12,18,50,0.35) 0%,rgba(20,30,80,0.12) 40%,transparent 100%);
+  animation:mistdrift 12s ease-in-out infinite alternate;
+}
+@keyframes mistdrift{
+  from{transform:translateX(-8px) scaleX(1)}
+  to{transform:translateX(8px) scaleX(1.03)}
+}
+.mist2{
+  position:absolute;
+  bottom:0;left:-10%;right:-10%;
+  height:140px;
+  z-index:1;
+  pointer-events:none;
+  background:radial-gradient(ellipse 80% 100% at 50% 100%,rgba(30,45,120,0.18) 0%,transparent 70%);
+  animation:mistdrift2 18s ease-in-out infinite alternate;
+}
+@keyframes mistdrift2{
+  from{transform:translateX(12px)}
+  to{transform:translateX(-12px)}
+}
+
+/* ── Particle canvas ── */
+#mk-particles{position:absolute;inset:0;z-index:1;pointer-events:none}
+
+/* ── Profile ring ── */
+.profile-wrap{
+  position:relative;
+  margin-bottom:22px;
+  animation:fadedown 0.9s ease both;
+}
+.outer-ring{
+  width:118px;height:118px;
+  border-radius:50%;
+  padding:2.5px;
+  background:conic-gradient(from 0deg,rgba(160,175,255,0.08),rgba(220,230,255,0.7),rgba(180,200,255,0.15),rgba(220,230,255,0.6),rgba(160,175,255,0.08));
+  animation:spinring 8s linear infinite;
+  box-shadow:0 0 36px rgba(160,185,255,0.25),0 0 80px rgba(120,150,240,0.1);
+}
+@keyframes spinring{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.inner-ring{
+  width:100%;height:100%;
+  border-radius:50%;
+  padding:3px;
+  background:#02030a;
+}
+.avatar-circle{
+  width:100%;height:100%;
+  border-radius:50%;
+  background:radial-gradient(circle at 38% 30%,#1a2155 0%,#080c22 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;
+  font-size:26px;
+  font-weight:700;
+  color:#c5d0ff;
+  letter-spacing:2px;
+  position:relative;
+  overflow:hidden;
+}
+.avatar-circle::after{
+  content:'';
+  position:absolute;
+  top:-30%;left:-30%;
+  width:60%;height:60%;
+  border-radius:50%;
+  background:rgba(220,230,255,0.07);
+}
+
+/* Crescent badge */
+.moon-badge{
+  position:absolute;
+  bottom:4px;right:4px;
+  width:30px;height:30px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#1a2155,#0a0d20);
+  border:1.5px solid rgba(200,215,255,0.35);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.6);
+}
+
+/* ── Typography ── */
+.mk-title{
+  font-family:'Cinzel',serif;
+  font-size:clamp(19px,5.2vw,24px);
+  font-weight:700;
+  text-align:center;
+  letter-spacing:1.5px;
+  color:#dde6ff;
+  text-shadow:0 0 30px rgba(160,185,255,0.4),0 0 60px rgba(120,155,240,0.15);
+  animation:fadedown 1s 0.15s ease both;
+  margin-bottom:6px;
+  line-height:1.25;
+}
+.mk-sub{
+  font-size:11px;
+  color:rgba(170,190,255,0.5);
+  text-align:center;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  animation:fadedown 1s 0.25s ease both;
+  margin-bottom:8px;
+}
+.mk-divider{
+  width:80px;height:1px;
+  margin:0 auto 30px;
+  background:linear-gradient(90deg,transparent,rgba(180,200,255,0.4),rgba(220,230,255,0.7),rgba(180,200,255,0.4),transparent);
+  animation:fadedown 1s 0.3s ease both;
+  position:relative;
+}
+.mk-divider::before,.mk-divider::after{
+  content:'';
+  position:absolute;
+  top:-1px;
+  width:4px;height:3px;
+  border-radius:50%;
+  background:rgba(220,230,255,0.7);
+}
+.mk-divider::before{left:14px}
+.mk-divider::after{right:14px}
+
+/* ── Link cards ── */
+.mk-links{width:100%;display:flex;flex-direction:column;gap:13px}
+
+.mk-btn{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:15px 18px;
+  border-radius:14px;
+  text-decoration:none;
+  color:#dde6ff;
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:0.3px;
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform 0.25s cubic-bezier(.34,1.56,.64,1),opacity 0.25s;
+  border:1px solid rgba(180,200,255,0.1);
+  background:rgba(10,14,38,0.65);
+}
+.mk-btn::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:rgba(180,200,255,0.04);
+  opacity:0;
+  transition:opacity 0.25s;
+  border-radius:inherit;
+}
+.mk-btn::after{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(220,235,255,0.35),transparent);
+  border-radius:inherit;
+}
+.mk-btn:hover{transform:translateY(-3px) scale(1.015);opacity:0.95}
+.mk-btn:hover::before{opacity:1}
+.mk-btn:active{transform:scale(0.97)}
+
+.mk-btn-yt{border-color:rgba(255,70,70,0.22)}
+.mk-btn-yt:hover{border-color:rgba(255,90,90,0.4);background:rgba(20,6,6,0.75)}
+.mk-btn-fb{border-color:rgba(80,110,255,0.22)}
+.mk-btn-fb:hover{border-color:rgba(100,130,255,0.4);background:rgba(6,10,30,0.75)}
+.mk-btn-tt{border-color:rgba(200,215,255,0.18)}
+.mk-btn-tt:hover{border-color:rgba(200,215,255,0.38);background:rgba(8,10,28,0.8)}
+.mk-btn-wa{border-color:rgba(40,210,100,0.2)}
+.mk-btn-wa:hover{border-color:rgba(40,210,100,0.38);background:rgba(4,14,10,0.8)}
+
+.mk-icon{
+  width:44px;height:44px;
+  border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  position:relative;
+}
+.mk-icon svg{width:22px;height:22px}
+.ic-yt{background:rgba(200,30,30,0.15);border:1px solid rgba(255,80,80,0.18)}
+.ic-fb{background:rgba(50,80,200,0.15);border:1px solid rgba(80,120,255,0.18)}
+.ic-tt{background:rgba(30,35,80,0.5);border:1px solid rgba(200,215,255,0.14)}
+.ic-wa{background:rgba(15,100,45,0.2);border:1px solid rgba(40,210,100,0.18)}
+
+.mk-btn-text{flex:1}
+.mk-btn-name{display:block;font-size:14px;font-weight:600;color:#cdd8ff}
+.mk-btn-handle{display:block;font-size:11px;color:rgba(160,180,255,0.4);margin-top:2px;font-weight:400}
+
+.mk-arrow{
+  font-size:16px;
+  color:rgba(180,200,255,0.3);
+  transition:transform 0.2s,color 0.2s;
+  flex-shrink:0;
+}
+.mk-btn:hover .mk-arrow{transform:translateX(4px);color:rgba(200,220,255,0.7)}
+
+/* ── Glow lines ── */
+.glow-line{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(160,185,255,0.12),rgba(200,215,255,0.3),rgba(160,185,255,0.12),transparent);
+  margin:28px 0 18px;
+  animation:fadein 1s 0.8s ease both;
+}
+
+/* ── Eye of Ra footer ── */
+.mk-footer{
+  text-align:center;
+  animation:fadein 1s 1s ease both;
+  margin-top:4px;
+}
+.ra-symbol{
+  font-size:26px;
+  color:rgba(160,185,255,0.35);
+  display:block;
+  margin-bottom:8px;
+  filter:drop-shadow(0 0 8px rgba(160,185,255,0.3));
+}
+.follow-label{
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:rgba(160,185,255,0.28);
+  margin-bottom:6px;
+}
+.copyright{
+  font-size:10px;
+  color:rgba(180,200,255,0.14);
+  letter-spacing:0.8px;
+}
+
+/* ── Stagger animations ── */
+@keyframes fadedown{
+  from{opacity:0;transform:translateY(-20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fadein{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.mk-btn:nth-child(1){animation:fadein 0.7s 0.38s ease both}
+.mk-btn:nth-child(2){animation:fadein 0.7s 0.5s ease both}
+.mk-btn:nth-child(3){animation:fadein 0.7s 0.62s ease both}
+.mk-btn:nth-child(4){animation:fadein 0.7s 0.74s ease both}
+
+.profile-wrap{animation:fadedown 0.85s 0.05s ease both}
+.mk-title{animation:fadedown 0.85s 0.15s ease both}
+.mk-sub{animation:fadedown 0.85s 0.22s ease both}
+.mk-divider{animation:fadedown 0.85s 0.28s ease both}
+</style>
+
+<div class="mk-root">
+
+  <div class="sky">
+    <div class="sky-base"></div>
+    <div class="sky-mid"></div>
+    <div class="sky-low"></div>
+    <div class="moon"><div class="moon-crescent"></div></div>
+    <canvas id="mk-particles"></canvas>
+    <div class="mist"></div>
+    <div class="mist2"></div>
+  </div>
+
+  <div class="mk-canvas">
+
+    <div class="profile-wrap">
+      <div class="outer-ring">
+        <div class="inner-ring">
+          <div class="avatar-circle"><img src="cropped.png" width="125.59" height="125.59" alt="IMG"></div>
+        </div>
+      </div>
+      <div class="moon-badge">&#9789;</div>
+    </div>
+
+    <h1 class="mk-title">TiRo Pride</h1>
+    <p class="mk-sub">Content Creator &nbsp;&#8231;&nbsp; Lifestyle &nbsp;&#8231;&nbsp; Entertainment</p>
+    <div class="mk-divider"></div>
+
+    <div class="mk-links">
+
+      <a class="mk-btn mk-btn-yt" href="https://www.youtube.com/@Tharii-Priyaniiofficial/shorts" target="_blank" rel="noopener">
+        <div class="mk-icon ic-yt">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" fill="#FF3333"/>
+            <polygon points="9.75,15.02 15.5,12 9.75,8.98" fill="#fff"/>
+          </svg>
+        </div>
+        <div class="mk-btn-text">
+          <span class="mk-btn-name">YouTube Shorts</span>
+          <span class="mk-btn-handle">@Tharii-Priyaniiofficial</span>
+        </div>
+        <span class="mk-arrow">&#8250;</span>
+      </a>
+
+      <a class="mk-btn mk-btn-fb" href="https://web.facebook.com/tiro.pride/" target="_blank" rel="noopener">
+        <div class="mk-icon ic-fb">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" fill="#4a7aff"/>
+          </svg>
+        </div>
+        <div class="mk-btn-text">
+          <span class="mk-btn-name">Facebook</span>
+          <span class="mk-btn-handle">tiro.pride</span>
+        </div>
+        <span class="mk-arrow">&#8250;</span>
+      </a>
+
+      <a class="mk-btn mk-btn-tt" href="https://www.tiktok.com/@z.tiropride" target="_blank" rel="noopener">
+        <div class="mk-icon ic-tt">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-6.33 6.29 6.34 6.34 0 0 0 6.33 6.34 6.34 6.34 0 0 0 6.33-6.34V8.8a8.18 8.18 0 0 0 4.78 1.52V6.89a4.85 4.85 0 0 1-1.8-.2z" fill="#e0e8ff"/>
+          </svg>
+        </div>
+        <div class="mk-btn-text">
+          <span class="mk-btn-name">TikTok</span>
+          <span class="mk-btn-handle">@z.tiropride</span>
+        </div>
+        <span class="mk-arrow">&#8250;</span>
+      </a>
+
+      <a class="mk-btn mk-btn-wa" href="https://wa.link/amk643" target="_blank" rel="noopener">
+        <div class="mk-icon ic-wa">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M20.52 3.48A11.93 11.93 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.22-1.63A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.2-1.25-6.21-3.48-8.52zM12 21.94a9.89 9.89 0 0 1-5.04-1.38l-.36-.21-3.74.98 1-3.65-.24-.38A9.94 9.94 0 0 1 2.06 12C2.06 6.5 6.5 2.06 12 2.06c2.66 0 5.16 1.04 7.04 2.92A9.91 9.91 0 0 1 21.94 12c0 5.5-4.44 9.94-9.94 9.94zm5.45-7.45c-.3-.15-1.76-.87-2.03-.96-.27-.1-.47-.15-.67.15s-.77.96-.94 1.16c-.17.2-.35.22-.65.07a8.18 8.18 0 0 1-2.41-1.49 9.03 9.03 0 0 1-1.67-2.08c-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.09 4.49.71.31 1.27.49 1.7.63.72.23 1.37.2 1.88.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35z" fill="#25D366"/>
+          </svg>
+        </div>
+        <div class="mk-btn-text">
+          <span class="mk-btn-name">WhatsApp</span>
+          <span class="mk-btn-handle">Direct contact</span>
+        </div>
+        <span class="mk-arrow">&#8250;</span>
+      </a>
+
+    </div>
+
+    <div class="glow-line"></div>
+
+    <footer class="mk-footer">
+      <span class="ra-symbol">&#x1303C;</span>
+      <p class="follow-label">Follow me on social media</p>
+      <p class="copyright">&copy; Tharii Priyanii Official &nbsp;&middot;&nbsp; All rights reserved</p>
+    </footer>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  const c = document.getElementById('mk-particles');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  let W, H;
+
+  function resize(){
+    const root = c.closest('.mk-root') || document.body;
+    W = c.width = root.offsetWidth || window.innerWidth;
+    H = c.height = root.offsetHeight || window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const pts = [];
+  for(let i = 0; i < 70; i++){
+    pts.push({
+      x: Math.random() * 1200,
+      y: Math.random() * 900,
+      r: Math.random() * 1.2 + 0.3,
+      vx: (Math.random() - 0.5) * 0.18,
+      vy: (Math.random() - 0.5) * 0.15,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.0005 + Math.random() * 0.001
+    });
+  }
+
+  const moonPts = [];
+  for(let i = 0; i < 8; i++){
+    const angle = (i / 8) * Math.PI * 2;
+    moonPts.push({
+      x: (W * 0.82) + Math.cos(angle) * (30 + Math.random() * 60),
+      y: (62) + Math.sin(angle) * (30 + Math.random() * 60),
+      r: Math.random() * 0.9 + 0.2,
+      vx: Math.cos(angle) * 0.06,
+      vy: Math.sin(angle) * 0.06,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+
+  let t = 0;
+  function draw(){
+    t += 0.016;
+    ctx.clearRect(0, 0, W, H);
+
+    for(const p of pts){
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < 0) p.x = W;
+      if(p.x > W) p.x = 0;
+      if(p.y < 0) p.y = H;
+      if(p.y > H) p.y = 0;
+      const a = 0.15 + 0.12 * Math.sin(t * p.speed * 60 + p.phase);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(190,210,255,${a})`;
+      ctx.fill();
+    }
+
+    for(const p of moonPts){
+      p.x += p.vx; p.y += p.vy;
+      const a = 0.25 + 0.2 * Math.sin(t * 0.8 + p.phase);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(220,235,255,${a})`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
